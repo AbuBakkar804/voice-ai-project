@@ -1,0 +1,2 @@
+timestamp,filename,gender,gender_conf,age_group,age_conf,emotion,emotion_conf,pitch_hz,pitch_band,speaking_rate,speech_ratio
+2026-06-22 12:00:01,recording.wav,Male,0.616,Old,0.42,Neutral,0.5,141.9,Low,Normal,0.49
