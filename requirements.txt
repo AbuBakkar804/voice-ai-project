@@ -4,7 +4,7 @@
 # ============================================================
 
 # --- Core ML / DL ---
-tensorflow==2.15.0          # deep learning (use tensorflow-gpu build for CUDA)
+#tensorflow==2.15.0          # deep learning (use tensorflow-gpu build for CUDA)
 scikit-learn==1.4.2         # encoders, scalers, metrics, train/test split
 numpy==1.26.4               # numerical arrays
 joblib==1.4.2               # saving/loading sklearn objects
