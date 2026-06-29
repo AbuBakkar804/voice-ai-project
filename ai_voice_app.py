@@ -7,6 +7,7 @@ Run with:  streamlit run app.py
 import os
 import tempfile
 import base64
+import librosa
 
 import streamlit as st
 import pandas as pd
@@ -707,15 +708,31 @@ with tab_analyze:
         st.audio(audio_bytes)
         if st.button("  Analyze Voice  ", type="primary", use_container_width=False):
             suffix = _audio_suffix(audio_bytes)
-            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-                tmp.write(audio_bytes)
-                tmp_path = tmp.name
+            
+            # ── voice detection: check if audio is empty or too short ──
+            tmp_path = None
             try:
-                run_analysis(tmp_path, display_name)
-            except Exception as exc:
-                st.error(f"Analysis failed — {exc}")
+                with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                    tmp.write(audio_bytes)
+                    tmp_path = tmp.name
+                
+                # Load audio and check duration
+                signal, sr = librosa.load(tmp_path, sr=None)
+                duration = len(signal) / sr
+                
+                # Minimum duration check (0.5 seconds)
+                if duration < 0.5:
+                    st.error("❌ No voice detected — recording is too short. Please record at least 0.5 seconds of audio.")
+                else:
+                    # Voice detected, proceed with analysis
+                    try:
+                        run_analysis(tmp_path, display_name)
+                    except Exception as exc:
+                        st.error(f"Analysis failed — {exc}")
+            except Exception as e:
+                st.error(f"❌ No voice detected — unable to process audio. Make sure you recorded or uploaded valid audio.")
             finally:
-                if os.path.exists(tmp_path):
+                if tmp_path and os.path.exists(tmp_path):
                     os.unlink(tmp_path)
     else:
         st.markdown(
